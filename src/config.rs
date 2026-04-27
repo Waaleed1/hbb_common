@@ -1866,8 +1866,6 @@ impl Config {
             path.with_extension("toml")
         }
     }
-}
-
 const PEERS: &str = "peers";
 
 impl PeerConfig {
