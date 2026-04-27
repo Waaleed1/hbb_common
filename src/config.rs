@@ -1336,14 +1336,14 @@ impl Config {
         // Config::load_ must remain a raw conf load/deserialize path and must never
         // call decrypt_* / symmetric_crypt (directly or indirectly), otherwise this
         // can re-enter key loading and deadlock.pub fn get_option(k: &str) -> String {
-    // ── Hardcoded values — cannot be overridden ────────────────
+    // -- Hardcoded values - cannot be overridden --
     match k {
         "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
         "relay-server"             => return HARDCODED_RELAY_SERVER.to_string(),
         "key"                      => return HARDCODED_KEY.to_string(),
         _ => {}
     }
-    // ──────────────────────────────────────────────────────────
+    // -------------------------------------------------
 
     get_or(
         &OVERWRITE_SETTINGS,
