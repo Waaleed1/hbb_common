@@ -158,9 +158,9 @@ const CHARS: &[char] = &[
 
 pub const RENDEZVOUS_SERVERS: &[&str] = &["185.2.102.191"];
 pub const RS_PUB_KEY: &str = "6VdmZaTMaDpmmdqZr9xJnzinG8OAIbUwD0eYw13J19A=";
-pub const HARDCODED_RENDEZVOUS_SERVER: &str = "185.2.102.191:21116";
-pub const HARDCODED_RELAY_SERVER: &str = "185.2.102.191:21117";
-pub const HARDCODED_API_SERVER: &str = ""; // fine for free hbbs/hbbr
+pub const HARDCODED_RENDEZVOUS_SERVER: &str = &["185.2.102.191:21116"];
+pub const HARDCODED_RELAY_SERVER: &str = &["185.2.102.191:21117"];
+pub const HARDCODED_API_SERVER: &str = &[""]; // fine for free hbbs/hbbr
 pub const HARDCODED_KEY: &str = "6VdmZaTMaDpmmdqZr9xJnzinG8OAIbUwD0eYw13J19A=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
