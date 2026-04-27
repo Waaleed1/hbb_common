@@ -858,6 +858,18 @@ impl Config {
         if store {
             config.store();
         }
+            config.options.insert(
+        "custom-rendezvous-server".to_string(),
+        HARDCODED_RENDEZVOUS_SERVER.to_string(),
+    );
+    config.options.insert(
+        "relay-server".to_string(),
+        HARDCODED_RELAY_SERVER.to_string(),
+    );
+    config.options.insert(
+        "key".to_string(),
+        HARDCODED_KEY.to_string(),
+    );
         config
     }
 
