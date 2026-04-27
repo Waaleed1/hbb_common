@@ -1335,7 +1335,24 @@ impl Config {
         // IMPORTANT: this path is called while holding KEY_PAIR lock.
         // Config::load_ must remain a raw conf load/deserialize path and must never
         // call decrypt_* / symmetric_crypt (directly or indirectly), otherwise this
-        // can re-enter key loading and deadlock.
+        // can re-enter key loading and deadlock.pub fn get_option(k: &str) -> String {
+    // ── Hardcoded values — cannot be overridden ────────────────
+    match k {
+        "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
+        "relay-server"             => return HARDCODED_RELAY_SERVER.to_string(),
+        "key"                      => return HARDCODED_KEY.to_string(),
+        _ => {}
+    }
+    // ──────────────────────────────────────────────────────────
+
+    get_or(
+        &OVERWRITE_SETTINGS,
+        &CONFIG2.read().unwrap().options,
+        &DEFAULT_SETTINGS,
+        k,
+    )
+    .unwrap_or_default()
+}
         let config = Config::load_::<Config>("");
         if !config.key_pair.0.is_empty() {
             *lock = Some(config.key_pair.clone());
@@ -1401,12 +1418,24 @@ impl Config {
         }
     }
 
-    pub fn get_options() -> HashMap<String, String> {
-        let mut res = DEFAULT_SETTINGS.read().unwrap().clone();
-        res.extend(CONFIG2.read().unwrap().options.clone());
-        res.extend(OVERWRITE_SETTINGS.read().unwrap().clone());
-        res
-    }
+    pub fn get_option(k: &str) -> String {
+    // ── Hardcoded values — cannot be overridden ────────────────
+       match k {
+           "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
+           "relay-server"             => return HARDCODED_RELAY_SERVER.to_string(),
+           "key"                      => return HARDCODED_KEY.to_string(),
+           _ => {}
+       }
+    // ──────────────────────────────────────────────────────────
+
+       get_or(
+           &OVERWRITE_SETTINGS,
+           &CONFIG2.read().unwrap().options,
+           &DEFAULT_SETTINGS,
+           k,
+       )
+       .unwrap_or_default()
+   }
 
     #[inline]
     fn purify_options(v: &mut HashMap<String, String>) {
