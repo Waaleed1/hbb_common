@@ -136,10 +136,10 @@ lazy_static::lazy_static! {
     pub static ref APP_HOME_DIR: RwLock<String> = Default::default();
 }
 
-pub const LINK_DOCS_HOME: &str = "https://bestperformance.ink";
-pub const LINK_DOCS_X11_REQUIRED: &str = "https://bestperformance.ink";
+pub const LINK_DOCS_HOME: &str = "https://rustdesk.com/docs/en/";
+pub const LINK_DOCS_X11_REQUIRED: &str = "https://rustdesk.com/docs/en/manual/linux/#x11-required";
 pub const LINK_HEADLESS_LINUX_SUPPORT: &str =
-    "bestperformance.ink";
+    "https://github.com/rustdesk/rustdesk/wiki/Headless-Linux-Support";
 
 lazy_static::lazy_static! {
     pub static ref HELPER_URL: HashMap<&'static str, &'static str> = HashMap::from([
@@ -158,9 +158,8 @@ const CHARS: &[char] = &[
 
 pub const RENDEZVOUS_SERVERS: &[&str] = &["185.2.102.191"];
 pub const RS_PUB_KEY: &str = "6VdmZaTMaDpmmdqZr9xJnzinG8OAIbUwD0eYw13J19A=";
-pub const HARDCODED_RENDEZVOUS_SERVER: &str = &["185.2.102.191:21116"];
-pub const HARDCODED_RELAY_SERVER: &str = &["185.2.102.191:21117"];
-pub const HARDCODED_API_SERVER: &str = &[""]; // fine for free hbbs/hbbr
+pub const HARDCODED_RENDEZVOUS_SERVER: &str = "185.2.102.191:21116";
+pub const HARDCODED_RELAY_SERVER: &str = "185.2.102.191:21117";
 pub const HARDCODED_KEY: &str = "6VdmZaTMaDpmmdqZr9xJnzinG8OAIbUwD0eYw13J19A=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
@@ -451,187 +450,6 @@ impl Default for PeerConfig {
             show_remote_cursor: Default::default(),
             lock_after_session_end: Default::default(),
             terminal_persistent: Default::default(),
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
-166
-167
-168
-169
-170
-171
-172
-173
-174
-175
-176
-177
-178
-179
-180
             privacy_mode: Default::default(),
             allow_swap_key: Default::default(),
             port_forwards: Default::default(),
@@ -731,6 +549,9 @@ impl Config2 {
         if store {
             config.store();
         }
+        config.options.insert("custom-rendezvous-server".to_string(), HARDCODED_RENDEZVOUS_SERVER.to_string());
+        config.options.insert("relay-server".to_string(), HARDCODED_RELAY_SERVER.to_string());
+        config.options.insert("key".to_string(), HARDCODED_KEY.to_string());
         config
     }
 
@@ -858,18 +679,6 @@ impl Config {
         if store {
             config.store();
         }
-            config.options.insert(
-        "custom-rendezvous-server".to_string(),
-        HARDCODED_RENDEZVOUS_SERVER.to_string(),
-    );
-    config.options.insert(
-        "relay-server".to_string(),
-        HARDCODED_RELAY_SERVER.to_string(),
-    );
-    config.options.insert(
-        "key".to_string(),
-        HARDCODED_KEY.to_string(),
-    );
         config
     }
 
@@ -1335,24 +1144,7 @@ impl Config {
         // IMPORTANT: this path is called while holding KEY_PAIR lock.
         // Config::load_ must remain a raw conf load/deserialize path and must never
         // call decrypt_* / symmetric_crypt (directly or indirectly), otherwise this
-        // can re-enter key loading and deadlock.pub fn get_option(k: &str) -> String {
-    // -- Hardcoded values - cannot be overridden --
-    match k {
-        "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
-        "relay-server"             => return HARDCODED_RELAY_SERVER.to_string(),
-        "key"                      => return HARDCODED_KEY.to_string(),
-        _ => {}
-    }
-    // -------------------------------------------------
-
-    get_or(
-        &OVERWRITE_SETTINGS,
-        &CONFIG2.read().unwrap().options,
-        &DEFAULT_SETTINGS,
-        k,
-    )
-    .unwrap_or_default()
-}
+        // can re-enter key loading and deadlock.
         let config = Config::load_::<Config>("");
         if !config.key_pair.0.is_empty() {
             *lock = Some(config.key_pair.clone());
@@ -1418,20 +1210,11 @@ impl Config {
         }
     }
 
-    pub fn get_option(k: &str) -> String {
-        match k {
-            "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
-            "relay-server"             => return HARDCODED_RELAY_SERVER.to_string(),
-            "key"                      => return HARDCODED_KEY.to_string(),
-            _ => {}
-        }
-        get_or(
-            &OVERWRITE_SETTINGS,
-            &CONFIG2.read().unwrap().options,
-            &DEFAULT_SETTINGS,
-            k,
-        )
-        .unwrap_or_default()
+    pub fn get_options() -> HashMap<String, String> {
+        let mut res = DEFAULT_SETTINGS.read().unwrap().clone();
+        res.extend(CONFIG2.read().unwrap().options.clone());
+        res.extend(OVERWRITE_SETTINGS.read().unwrap().clone());
+        res
     }
 
     #[inline]
@@ -1448,8 +1231,13 @@ impl Config {
         config.options = v;
         config.store();
     }
-
     pub fn get_option(k: &str) -> String {
+        match k {
+            "custom-rendezvous-server" => return HARDCODED_RENDEZVOUS_SERVER.to_string(),
+            "relay-server" => return HARDCODED_RELAY_SERVER.to_string(),
+            "key" => return HARDCODED_KEY.to_string(),
+            _ => {}
+        }
         get_or(
             &OVERWRITE_SETTINGS,
             &CONFIG2.read().unwrap().options,
@@ -1864,6 +1652,8 @@ impl Config {
             path.with_extension("toml")
         }
     }
+}
+
 const PEERS: &str = "peers";
 
 impl PeerConfig {
