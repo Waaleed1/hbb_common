@@ -451,7 +451,6 @@ impl Default for PeerConfig {
             show_remote_cursor: Default::default(),
             lock_after_session_end: Default::default(),
             terminal_persistent: Default::default(),
-￼
 1
 2
 3
